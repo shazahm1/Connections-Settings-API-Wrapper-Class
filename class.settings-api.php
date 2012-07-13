@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * Connections Settings API Wrapper Class
+ *
+ * @package Connections Settings API Wrapper Class
+ * @copyright Copyright (c) 2012, Steven A. Zahm
+ * @license http://opensource.org/licenses/gpl-2.0.php GNU Public License
+ * @version 0.7.3 
+ */
+
 if ( ! class_exists('cnSettingsAPI') )
 {
 	
@@ -229,14 +238,27 @@ if ( ! class_exists('cnSettingsAPI') )
 		 * 		'sanitize_callback' => 'string'	// A callback function that sanitizes the settings's value. [optional]
 		 * 	}
 		 * 
+		 * SUPPORTED FIELD TYPES:
+		 * 	checkbox
+		 * 	multicheckbox
+		 * 	radio
+		 * 	select
+		 * 	multiselect
+		 * 	text
+		 * 	textarea
+		 * 	quicktag
+		 * 	rte
+		 * 
 		 * RECOMMENDED: The following sanitize_callback to use based on field type.
+		 * 	Reference: http://codex.wordpress.org/Data_Validation
+		 * 
 		 * 	rte = wp_kses_post
+		 * 	quicktag = wp_kses_data
 		 * 	textarea = esc_textarea [for plain text]
 		 * 	textarea = esc_html [for text containing HTML]
 		 * 	text = sanitize_text_field [for plain text]
 		 * 	text = esc_url_raw [for URLs, not safe for display, use esc_url when displaying.]
 		 * 	checkbox = intval [checkbox values should be saved as either 1 or 0]
-		 * Reference: http://codex.wordpress.org/Data_Validation
 		 * 
 		 * NOTE:
 		 * 	Fields registered to a section will be saved as a serialized associative array where the section ID is the option_name
@@ -558,6 +580,10 @@ if ( ! class_exists('cnSettingsAPI') )
 		/**
 		 * The call back used to render the settings field types.
 		 * 
+		 * Credit to Tareq. Some of the code to render the form fields were pickup from his Settings API
+		 * 	http://tareq.wedevs.com/2012/06/wordpress-settings-api-php-class/
+		 * 	https://github.com/tareq1988/wordpress-settings-api-class
+		 * 
 		 * @author Steven A. Zahm
 		 * @since 0.7.3.0
 		 * @access private
@@ -636,7 +662,6 @@ if ( ! class_exists('cnSettingsAPI') )
 					
 					foreach ( $field['options'] as $key => $label )
 					{
-						//$checked = isset( $value[$key] ) ? checked($key, $value[$key], FALSE) : '';
 						$checked = checked( TRUE , in_array($key, $value) , FALSE );
 						
 						$out .= sprintf( '<label><input type="checkbox" class="checkbox" id="%1$s[%2$s]" name="%1$s[]" value="%2$s" %3$s/> %4$s</label><br />', $name, $key, $checked, $label );
