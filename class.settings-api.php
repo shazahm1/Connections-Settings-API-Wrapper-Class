@@ -6,7 +6,7 @@
  * @package Connections Settings API Wrapper Class
  * @copyright Copyright (c) 2012, Steven A. Zahm
  * @license http://opensource.org/licenses/gpl-2.0.php GNU Public License
- * @version 0.7.3 
+ * @version 0.7.3.1
  */
 
 if ( ! class_exists('cnSettingsAPI') )
@@ -230,7 +230,9 @@ if ( ! class_exists('cnSettingsAPI') )
 		 * 										//	*required, if field is to be shown in a specific registered section. Recommend prefix with plugin slug.
 		 * 		'title' => 'string',			// The field title. [required]
 		 * 		'type' => 'string',				// The field type. [required] Valid values : text, textarea, checkbox, multicheckbox, radio, select, rte
-		 * 		'size' => 'string,				// The field size. Valid values : small | regular | large *only used for the text field type.
+		 * 		'size' => 'string,				// The field size. [optional] Valid values : small | regular | large *only used for the text field type.
+		 * 		'show_option_none' => 'string'	// The string to show when no value has been chosen. [required *only for the page field type] *only used for the page field type.
+		 * 		'option_none_value' => 'string'	// The value to use when no value has been chosen. [required *only for the page field type] *only used for the page field type.
 		 * 		'desc' => 'string',				// The field description text. [optional]
 		 * 		'help' => 'string',				// The field help text. [optional]
 		 * 		'options' => array||string,		// The fields options. [optional]
@@ -248,6 +250,7 @@ if ( ! class_exists('cnSettingsAPI') )
 		 * 	textarea
 		 * 	quicktag
 		 * 	rte
+		 * 	page [shows a drop down with the WordPress pages.]
 		 * 
 		 * RECOMMENDED: The following sanitize_callback to use based on field type.
 		 * 	Reference: http://codex.wordpress.org/Data_Validation
@@ -340,6 +343,8 @@ if ( ! class_exists('cnSettingsAPI') )
 					'title' => $field['title'],
 					'desc' => isset( $field['desc'] ) ? $field['desc'] : '',
 					'help' => isset( $field['help'] ) ? $field['help'] : '',
+					'show_option_none' => isset( $field['show_option_none'] ) ? $field['show_option_none'] : '',
+					'option_none_value' => isset( $field['option_none_value'] ) ? $field['option_none_value'] : '',
 					'options' => isset( $field['options'] ) ? $field['options'] : array()/*,
 					'default' => isset( $field['default'] ) && ! empty( $field['default'] ) ? $field['default'] : FALSE,*/
 				);
@@ -712,6 +717,11 @@ if ( ! class_exists('cnSettingsAPI') )
 						if ( isset($field['desc']) && ! empty($field['desc']) ) $out .= sprintf( '<span class="description">%1$s</span><br />', $field['desc'] );
 						$out .= sprintf( '<textarea rows="10" cols="50" class="%1$s-text" id="%2$s" name="%2$s">%3$s</textarea>', $size, $name, $value );
 					}
+					
+					break;
+					
+				case 'page':
+					$out .= wp_dropdown_pages( array( 'name' => $name, 'echo' => 0, 'show_option_none' => $field['show_option_none'], 'option_none_value' => $field['option_none_value'], 'selected' => $value ) );
 					
 					break;
 			}
